@@ -16,9 +16,7 @@ Q1_2019 <- read_csv("C:/Users/LisaW/OneDrive/Documents/Google_Data_analytics/Cas
 
 Q1_2020 <- read_csv("C:/Users/LisaW/OneDrive/Documents/Google_Data_analytics/Casestudy/Bike-share/Divvy_Trips_2020_Q1.csv")
 
-
 #CLEAN 2019 DATASET:
-
 #Match data type and headers from 2019 to 2020
 Q1_2019_clean <- Q1_2019 %>%
 rename( 
@@ -61,9 +59,7 @@ str(all_trips) #See list of columns and data types
 head(Q1_2019_clean$tripduration) #check tripduration conversion to minutes was successful 
 table(Q1_2019_clean$member_casual) #Check conversion of member/casual was successful, and the proper number of observations were reassigned 
 
-
 #CLEAN 2020 DATASET
-
 #Add a tripduration column to the 2020 dataset
 Q1_2020_clean <- Q1_2020 %>%
 mutate(
@@ -96,6 +92,7 @@ all_trips$day_of_week <- ordered(all_trips$day_of_week, levels=c("Monday","Tuesd
 #make sure the proper number of observations were reassigned 
 table(all_trips$day_of_week) 
 
+#ANALYSE
 #Overall tripduration stats
 all_trips %>%
 group_by(member_casual) %>%
@@ -105,10 +102,21 @@ median_duration = median(tripduration, na.rm = TRUE),
 max_duration = max(tripduration, na.rm = TRUE),
 min_duration = min(tripduration, na.rm = TRUE))
 
-#Compare weekdays for members vs casual users
+#Overall ride frequency by member vs casual
+all_trips %>%
+group_by(member_casual) %>%
+summarise(total_rides = n())
+
+#Ride frequency by week
 all_trips %>%
 group_by(member_casual, day_of_week) %>%
 summarise(avg_duration = mean(tripduration, na.rm = TRUE))
+
+#Ride frequency by month
+all_trips %>%
+mutate(month = month(started_at, label = TRUE)) %>%
+group_by(member_casual, month) %>%
+summarise(total_rides = n(), .groups = "drop")
 
 #Create visualisation for weekly number of rides by member vs casual 
 all_trips %>%  
@@ -143,3 +151,5 @@ all_trips %>%
 group_by(member_casual, day_of_week) %>%
 summarise(avg_duration = mean(tripduration, na.rm = TRUE)) %>%
 write_csv("avg_trip.csv")
+
+
